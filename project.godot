@@ -18,6 +18,10 @@ config/icon="res://icon.svg"
 
 project/assembly_name="DualGridSystem"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/dualgrid_bake/plugin.cfg")
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

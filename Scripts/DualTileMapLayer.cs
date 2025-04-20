@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
+[Tool]
 public partial class DualTileMapLayer: TileMapLayer
 {
 
