@@ -1,7 +1,10 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
+
+[Tool]
 public partial class DualGridSystemTilemap : TileMapLayer
 {
     static readonly Vector2I[] NEIGHBOURS = [new(0, 0), new(1, 0), new(0, 1), new(1, 1)];
@@ -12,27 +15,46 @@ public partial class DualGridSystemTilemap : TileMapLayer
         get; private set;
     } = [];
 
+    [Export]
+    public bool IsBaked
+    {
+        get; private set;
+    } = false;
+
     private static readonly Dictionary<Vector4I, Vector2I> s_neighboursToAtlasCoord = new() {
-        {new (1, 1, 1, 1), new Vector2I(2, 1)}, // All corners
-        {new (0, 0, 0, 1), new Vector2I(1, 3)}, // Outer bottom-right corner
-        {new (0, 0, 1, 0), new Vector2I(0, 0)}, // Outer bottom-left corner
-        {new (0, 1, 0, 0), new Vector2I(0, 2)}, // Outer top-right corner
-        {new (1, 0, 0, 0), new Vector2I(3, 3)}, // Outer top-left corner
-        {new (0, 1, 0, 1), new Vector2I(1, 0)}, // Right edge
-        {new (1, 0, 1, 0), new Vector2I(3, 2)}, // Left edge
-        {new (0, 0, 1, 1), new Vector2I(3, 0)}, // Bottom edge
-        {new (1, 1, 0, 0), new Vector2I(1, 2)}, // Top edge
-        {new (0, 1, 1, 1), new Vector2I(1, 1)}, // Inner bottom-right corner
-        {new (1, 0, 1, 1), new Vector2I(2, 0)}, // Inner bottom-left corner
-        {new (1, 1, 0, 1), new Vector2I(2, 2)}, // Inner top-right corner
-        {new (1, 1, 1, 0), new Vector2I(3, 1)}, // Inner top-left corner
-        {new (0, 1, 1, 0), new Vector2I(2, 3)}, // Bottom-left top-right corners
-        {new (1, 0, 0, 1), new Vector2I(0, 1)}, // Top-left down-right corners
-		{new (0, 0, 0, 0), new Vector2I(0, 3)}, // No corners
+        {new (1, 1, 1, 1), new(2, 1)}, // All corners
+        {new (0, 0, 0, 1), new(1, 3)}, // Outer bottom-right corner
+        {new (0, 0, 1, 0), new(0, 0)}, // Outer bottom-left corner
+        {new (0, 1, 0, 0), new(0, 2)}, // Outer top-right corner
+        {new (1, 0, 0, 0), new(3, 3)}, // Outer top-left corner
+        {new (0, 1, 0, 1), new(1, 0)}, // Right edge
+        {new (1, 0, 1, 0), new(3, 2)}, // Left edge
+        {new (0, 0, 1, 1), new(3, 0)}, // Bottom edge
+        {new (1, 1, 0, 0), new(1, 2)}, // Top edge
+        {new (0, 1, 1, 1), new(1, 1)}, // Inner bottom-right corner
+        {new (1, 0, 1, 1), new(2, 0)}, // Inner bottom-left corner
+        {new (1, 1, 0, 1), new(2, 2)}, // Inner top-right corner
+        {new (1, 1, 1, 0), new(3, 1)}, // Inner top-left corner
+        {new (0, 1, 1, 0), new(2, 3)}, // Bottom-left top-right corners
+        {new (1, 0, 0, 1), new(0, 1)}, // Top-left down-right corners
+		{new (0, 0, 0, 0), new(0, 3)}, // No corners
     };
 
     public override void _Ready()
     {
+        this.Modulate = new Color(1, 1, 1, .0f);
+
+        if (IsBaked)
+        {
+            return;
+        }
+
+        Bake();
+    }
+
+    public void Bake()
+    {
+        IsBaked = true;
         DualTileMapLayers ??= [];
 
         foreach (var layer in DualTileMapLayers)
@@ -43,7 +65,8 @@ public partial class DualGridSystemTilemap : TileMapLayer
             }
         }
 
-        this.Modulate = new Color(1, 1, 1, .0f);
+        Modulate = new Color(1, 1, 1, .0f);
+        
     }
 
     public void SetTile(TileMapLayer tileMapLayer, Vector2I coords)
