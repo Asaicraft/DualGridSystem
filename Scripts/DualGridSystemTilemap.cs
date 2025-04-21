@@ -6,14 +6,26 @@ using System.Runtime.CompilerServices;
 [Tool]
 public partial class DualGridSystemTilemap : TileMapLayer
 {
+	private DualTileMapLayer[] _dualTileMapLayers = [];
 	static readonly Vector2I[] NEIGHBOURS = [new(0, 0), new(1, 0), new(0, 1), new(1, 1)];
 
 	[Export]
 	public DualTileMapLayer[] DualTileMapLayers
 	{
-		get; private set;
-	} = [];
+		get => _dualTileMapLayers;
+		private set
+		{
+			if (_dualTileMapLayers == value)
+			{
+				return;
+			}
 
+			var prev = _dualTileMapLayers;
+			_dualTileMapLayers = value;
+
+			AggresiveRefresh(prev);
+		}
+	}
 	[Export]
 	public bool IsBaked
 	{
@@ -41,7 +53,7 @@ public partial class DualGridSystemTilemap : TileMapLayer
 
 	public override void _Ready()
 	{
-		if(Engine.IsEditorHint())
+		if (Engine.IsEditorHint())
 		{
 			Bake();
 
@@ -72,10 +84,28 @@ public partial class DualGridSystemTilemap : TileMapLayer
 	public void Bake()
 	{
 		IsBaked = true;
+		AggresiveRefresh();
+	}
+
+	public void AggresiveRefresh()
+	{
+		AggresiveRefresh(null!);
+	}
+
+	private void AggresiveRefresh(DualTileMapLayer[] prevlayers = null!)
+	{
+		prevlayers ??= [];
+		foreach (var prevLayer in prevlayers)
+		{
+			prevLayer.DualTileMapLayerChanged -= () => AggresiveRefresh();
+		}
+
 		DualTileMapLayers ??= [];
 
 		foreach (var layer in DualTileMapLayers)
 		{
+			layer.DualTileMapLayerChanged += () => AggresiveRefresh();
+
 			foreach (var coord in GetUsedCells())
 			{
 				SetDisplayTile(layer, coord);
@@ -85,18 +115,18 @@ public partial class DualGridSystemTilemap : TileMapLayer
 		Modulate = new Color(1, 1, 1, .0f);
 	}
 
-	public void SetTile(TileMapLayer tileMapLayer, Vector2I coords)
+	public void SetTile(DualTileMapLayer tileMapLayer, Vector2I coords)
 	{
 		SetDisplayTile(tileMapLayer, coords);
 	}
 
-	void SetDisplayTile(TileMapLayer tileMapLayer, Vector2I pos)
+	void SetDisplayTile(DualTileMapLayer tileMapLayer, Vector2I pos)
 	{
 		// loop through 4 display neighbours
 		for (var i = 0; i < NEIGHBOURS.Length; i++)
 		{
 			var newPos = pos + NEIGHBOURS[i];
-			tileMapLayer.SetCell(newPos, 0, atlasCoords: CalculateDisplayTile(tileMapLayer, newPos));
+			tileMapLayer.SetCell(newPos, tileMapLayer.SourceId, atlasCoords: CalculateDisplayTile(tileMapLayer, newPos));
 		}
 	}
 
@@ -129,7 +159,7 @@ public partial class DualGridSystemTilemap : TileMapLayer
 		var atlasCoord = GetCellAtlasCoords(coords);
 		var minus = new Vector2I(-1, -1);
 
-		if(atlasCoord == minus)
+		if (atlasCoord == minus)
 		{
 			return null;
 		}

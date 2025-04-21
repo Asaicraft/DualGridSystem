@@ -1,6 +1,7 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://dqek5srxro87d"]
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://dqek5srxro87d"]
 
 [ext_resource type="Texture2D" uid="uid://dyw5axmxohgbb" path="res://Sprites/StoneBricksPath.png" id="1_5gedc"]
+[ext_resource type="Texture2D" uid="uid://dnqgjwk7fh5ct" path="res://Sprites/StoneSolidBricksPath.png" id="2_lddk2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lddk2"]
 texture = ExtResource("1_5gedc")
@@ -21,5 +22,25 @@ texture = ExtResource("1_5gedc")
 3:3/0 = 0
 0:3/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xs2r1"]
+texture = ExtResource("2_lddk2")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+0:3/0 = 0
+
 [resource]
 sources/0 = SubResource("TileSetAtlasSource_lddk2")
+sources/1 = SubResource("TileSetAtlasSource_xs2r1")
