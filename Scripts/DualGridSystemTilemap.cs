@@ -72,7 +72,12 @@ public partial class DualGridSystemTilemap : TileMapLayer
 	{
 		base._UpdateCells(coords, forcedCleanup);
 
-		foreach (var layer in DualTileMapLayers)
+		if(!Engine.IsEditorHint())
+        {
+            return;
+        }
+
+        foreach (var layer in DualTileMapLayers)
 		{
 			foreach (var coord in coords)
 			{
